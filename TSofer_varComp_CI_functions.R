@@ -15,6 +15,10 @@ calc.vc <- function(Y, W, covMatList, verbose = TRUE, max.iter = 20, eps = 1e-4)
 	if (verbose) message("Transforming covariance matrices in preparation for analysis...")
 	
 	n.cov.mat <- length(covMatList)
+	if (is.null(names(covMatList))){
+		message(paste("covMatList does not have names, naming matrices by ", paste0("A", 1:n.cov.mat)))
+		names(covMatList) <-  paste0("A", 1:n.cov.mat)
+	}
 	names.cov.mat <- names(covMatList)
 	
 	covMatVecList <- vector(mode = "list", length = n.cov.mat)
