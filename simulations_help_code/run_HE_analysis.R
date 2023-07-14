@@ -8,7 +8,7 @@ sim.dir <- ""  ## put your own!
 require(GWASTools)
 require(CompQuadForm)
 
-source('Heritability_CIs/Tsovar_varComp_CI_functions.R')
+source('Heritability_CIs/TSofer_varComp_CI_functions.R')
 output.folder <- paste0(sim.dir, "/output/")
 covMatList <- getobj(paste0(sim.dir, "/simulated_data/covMatList.RData"))
 sqrt.covMat <- getobj((paste0(sim.dir, "simulated_data/sqrt_covMat.RData"))
