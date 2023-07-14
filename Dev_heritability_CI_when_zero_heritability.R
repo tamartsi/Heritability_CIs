@@ -33,6 +33,7 @@ heritability.CI <- function(prep.dat, CI.prob= 0.95, prob.eps = 0.01, end.point.
     return(surv)
   }
   
+  prob.var <- 1-calc.surv.for.const(kinship.var)
   
   if (kinship.var == 0){
     low.CI.prob <- 0
@@ -40,64 +41,51 @@ heritability.CI <- function(prep.dat, CI.prob= 0.95, prob.eps = 0.01, end.point.
     
     low.CI.val <- 0
     
-    ########  binary search for high.CI point
-    val.low <- 0 ; surv.low <- 1
-    val.high <- 1; surv.high <- 0
-    val.mid <- (val.high + val.low)/2 ; surv.mid  <- calc.surv.for.const(val.mid)
-    while (abs(surv.mid - high.CI.prob) > prob.eps & abs(val.mid - val.low) > end.point.eps & abs(val.mid - val.high) > end.point.eps) {
-      if (surv.mid > high.CI.prob){
-        val.low <- val.mid; surv.low <- surv.mid
-        val.mid <- (val.high + val.low)/2 ; surv.mid <- calc.surv.for.const(val.mid)
-      } else{ # surv.mid < low.CI.prob
-        val.high <- val.mid; surv.high <- surv.mid
-        val.mid <- (val.high + val.low)/2 ; surv.mid <- pmax(0, calc.surv.for.const(val.mid))
+    
+  } else{ 
+    low.CI.prob <- 1-min((1-CI.prob)/2, prob.var)
+    high.CI.prob <- (1-CI.prob) - min((1-CI.prob)/2, prob.var)
+    
+    if (low.CI.prob > 1-(1-CI.prob)/2){
+      low.CI.val <- 0
+    }  else{
+    
+      ########  binary search for low.CI point
+      val.low <- 0 ; surv.low <- 1
+      val.high <- 1; surv.high <- 0
+      val.mid <- (val.high + val.low)/2 ; surv.mid <- calc.surv.for.const(val.mid)
+      while (abs(surv.mid - low.CI.prob) > prob.eps & abs(val.mid - val.low) > end.point.eps & abs(val.mid - val.high) > end.point.eps) {
+        if (surv.mid > low.CI.prob){
+          val.low <- val.mid; surv.low <- surv.mid
+          val.mid <- (val.high + val.low)/2 ; surv.mid <- calc.surv.for.const(val.mid)
+        } else{ # surv.mid < low.CI.prob
+          val.high <- val.mid; surv.high <- surv.mid
+          val.mid <- (val.high + val.low)/2 ; surv.mid <- calc.surv.for.const(val.mid)
+        }
+        if (val.high == val.low) break
       }
-      if (val.high == val.low) break
+      
+      low.CI.val <- val.mid
     }
-    
-    high.CI.val <- val.mid
-    
-    
-  } else{
-    
-    low.CI.prob <- 1-(1-CI.prob)/2
-    high.CI.prob <- (1-CI.prob)/2
-    
-    ########  binary search for low.CI point
-    val.low <- 0 ; surv.low <- 1
-    val.high <- 1; surv.high <- 0
-    val.mid <- (val.high + val.low)/2 ; surv.mid <- calc.surv.for.const(val.mid)
-    while (abs(surv.mid - low.CI.prob) > prob.eps & abs(val.mid - val.low) > end.point.eps & abs(val.mid - val.high) > end.point.eps) {
-      if (surv.mid > low.CI.prob){
-        val.low <- val.mid; surv.low <- surv.mid
-        val.mid <- (val.high + val.low)/2 ; surv.mid <- calc.surv.for.const(val.mid)
-      } else{ # surv.mid < low.CI.prob
-        val.high <- val.mid; surv.high <- surv.mid
-        val.mid <- (val.high + val.low)/2 ; surv.mid <- calc.surv.for.const(val.mid)
-      }
-      if (val.high == val.low) break
-    }
-    
-    low.CI.val <- val.mid
-    
-    
-    ########  binary search for high.CI point
-    val.low <- 0 ; surv.low <- 1
-    val.high <- 1; surv.high <- 0
-    val.mid <- (val.high + val.low)/2 ; surv.mid  <- calc.surv.for.const(val.mid)
-    while (abs(surv.mid - high.CI.prob) > prob.eps & abs(val.mid - val.low) > end.point.eps & abs(val.mid - val.high) > end.point.eps) {
-      if (surv.mid > high.CI.prob){
-        val.low <- val.mid; surv.low <- surv.mid
-        val.mid <- (val.high + val.low)/2 ; surv.mid <- calc.surv.for.const(val.mid)
-      } else{ # surv.mid < low.CI.prob
-        val.high <- val.mid; surv.high <- surv.mid
-        val.mid <- (val.high + val.low)/2 ; surv.mid <- pmax(0, calc.surv.for.const(val.mid))
-      }
-      if (val.high == val.low) break
-    }
-    
-    high.CI.val <- val.mid
   }
+  
+  ########  binary search for high.CI point
+  val.low <- 0 ; surv.low <- 1
+  val.high <- 1; surv.high <- 0
+  val.mid <- (val.high + val.low)/2 ; surv.mid  <- calc.surv.for.const(val.mid)
+  while (abs(surv.mid - high.CI.prob) > prob.eps & abs(val.mid - val.low) > end.point.eps & abs(val.mid - val.high) > end.point.eps) {
+    if (surv.mid > high.CI.prob){
+      val.low <- val.mid; surv.low <- surv.mid
+      val.mid <- (val.high + val.low)/2 ; surv.mid <- calc.surv.for.const(val.mid)
+    } else{ # surv.mid < low.CI.prob
+      val.high <- val.mid; surv.high <- surv.mid
+      val.mid <- (val.high + val.low)/2 ; surv.mid <- pmax(0, calc.surv.for.const(val.mid))
+    }
+    if (val.high == val.low) break
+  }
+  
+  high.CI.val <- val.mid
+  
   CI <- c(low.CI.val, high.CI.val)
 
   
