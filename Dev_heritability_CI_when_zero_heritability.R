@@ -158,31 +158,36 @@ calcCIsForVCs <- function( covMatList, eval.vc.name , VC.est, XtXinv, var.resids
     
     # low point of confidence interval is assumed to be zero
     low.CI.val <- 0
-  }
-  
-  else{
+  } else{
     low.CI.prob <- 1-min((1-CI.prob)/2, prob.low.var)
     high.CI.prob <- (1-CI.prob) - min((1-CI.prob)/2, prob.low.var)
     
-    ########  binary search for low.CI point
-    val.low <- 0 ; surv.low <- 1
-    val.high <- total.var; surv.high <- 0
-    val.mid <- (val.high + val.low)/2 ; surv.mid <- davies(val.mid, lambda, acc=1e-6)$Qq
-    while (abs(surv.mid - low.CI.prob) > prob.eps & abs(val.mid - val.low) > end.point.eps & abs(val.mid - val.high) > end.point.eps) {
-      if (surv.mid > low.CI.prob){
-        val.low <- val.mid; surv.low <- surv.mid
-        val.mid <- (val.high + val.low)/2 ; surv.mid <- davies(val.mid, lambda, acc=1e-6)$Qq
-      } else{ # surv.mid < low.CI.prob
-        val.high <- val.mid; surv.high <- surv.mid
-        val.mid <- (val.high + val.low)/2 ; surv.mid <- davies(val.mid, lambda, acc=1e-6)$Qq
+    if (low.CI.prob > 1-(1-CI.prob)/2){
+      low.CI.val <- 0
+    }  else{
+      
+      
+      ########  binary search for low.CI point
+      val.low <- 0 ; surv.low <- 1
+      val.high <- total.var; surv.high <- 0
+      val.mid <- (val.high + val.low)/2 ; surv.mid <- davies(val.mid, lambda, acc=1e-6)$Qq
+      while (abs(surv.mid - low.CI.prob) > prob.eps & abs(val.mid - val.low) > end.point.eps & abs(val.mid - val.high) > end.point.eps) {
+        if (surv.mid > low.CI.prob){
+          val.low <- val.mid; surv.low <- surv.mid
+          val.mid <- (val.high + val.low)/2 ; surv.mid <- davies(val.mid, lambda, acc=1e-6)$Qq
+        } else{ # surv.mid < low.CI.prob
+          val.high <- val.mid; surv.high <- surv.mid
+          val.mid <- (val.high + val.low)/2 ; surv.mid <- davies(val.mid, lambda, acc=1e-6)$Qq
+        }
+        if (val.high == val.low) break
       }
-      if (val.high == val.low) break
+      
+      low.CI.val <- val.mid
     }
-    
-    low.CI.val <- val.mid
+      
   }
   
-  
+ 
   
   
   ########  binary search for high.CI point
@@ -217,22 +222,27 @@ calcCIsForVCs <- function( covMatList, eval.vc.name , VC.est, XtXinv, var.resids
     low.CI.prob <- 1-min((1-CI.prob)/2, prob.low.ratio)
     high.CI.prob <- (1-CI.prob) - min((1-CI.prob)/2, prob.low.ratio)
     
-    val.low <- 0 ; surv.low <- 1
-    val.high <- 1; surv.high <- 0
-    val.mid <- (val.high + val.low)/2 ; surv.mid <- surv.ratio(const = val.mid, mat, var.mat)$surv
-    while (abs(surv.mid - low.CI.prob) > prob.eps & abs(val.mid - val.low) > end.point.eps & abs(val.mid - val.high) > end.point.eps) {
-      if (surv.mid > low.CI.prob){
-        val.low <- val.mid; surv.low <- surv.mid
-        val.mid <- (val.high + val.low)/2 ; surv.mid <- surv.ratio(const = val.mid, mat, var.mat)$surv
-      } else{ # surv.mid < low.CI.prob
-        val.high <- val.mid; surv.high <- surv.mid
-        val.mid <- (val.high + val.low)/2 ; surv.mid <- surv.ratio(const = val.mid, mat, var.mat)$surv
-      }
-      if (val.high == val.low) break
-    }
+    if (low.CI.prob > 1-(1-CI.prob)/2){
+      low.ratio.CI.val <- 0
+    }  else{
     
-    low.ratio.CI.val <- val.mid
-  }
+      val.low <- 0 ; surv.low <- 1
+      val.high <- 1; surv.high <- 0
+      val.mid <- (val.high + val.low)/2 ; surv.mid <- surv.ratio(const = val.mid, mat, var.mat)$surv
+      while (abs(surv.mid - low.CI.prob) > prob.eps & abs(val.mid - val.low) > end.point.eps & abs(val.mid - val.high) > end.point.eps) {
+        if (surv.mid > low.CI.prob){
+          val.low <- val.mid; surv.low <- surv.mid
+          val.mid <- (val.high + val.low)/2 ; surv.mid <- surv.ratio(const = val.mid, mat, var.mat)$surv
+        } else{ # surv.mid < low.CI.prob
+          val.high <- val.mid; surv.high <- surv.mid
+          val.mid <- (val.high + val.low)/2 ; surv.mid <- surv.ratio(const = val.mid, mat, var.mat)$surv
+        }
+        if (val.high == val.low) break
+      }
+      
+      low.ratio.CI.val <- val.mid
+      }
+    }
   
   
   ########  binary search for high.CI point
