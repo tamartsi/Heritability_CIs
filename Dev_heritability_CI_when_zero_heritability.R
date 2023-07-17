@@ -134,7 +134,7 @@ calcCIsForVCs <- function( covMatList, eval.vc.name , VC.est, XtXinv, var.resids
   lambda <- eigen(mat, symmetric=TRUE, only.values = TRUE)$values
   
   # probability of having value lower than the one observed for the variance
-  prob.low.var <- 1 - davies(vest.var.by.eval.vc.name, lambda, acc=1e-6)$Qq
+  prob.low.var <- 1 - davies(est.var.by.eval.vc.name, lambda, acc=1e-6)$Qq
   
   
   
