@@ -53,6 +53,6 @@ scanAnnot <- ScanAnnotationDataFrame(dat)
 
 
 save(scanAnnot, file = paste0(sim.dir, "/simulated_data/scanAnnot_for_sim.RData"))
-save(covMatList, file = paste0(sim.dir, "/simulated_data/covMatList.RData" )
-save(sqrt.covMat, file = paste0(sim.dir, "/simulated_data/sqrt_covMat.RData" )
+save(covMatList, file = paste0(sim.dir, "/simulated_data/covMatList.RData" ))
+save(sqrt.covMat, file = paste0(sim.dir, "/simulated_data/sqrt_covMat.RData" ))
 

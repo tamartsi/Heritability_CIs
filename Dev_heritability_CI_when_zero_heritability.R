@@ -119,7 +119,7 @@ calcCIsForVCs <- function( covMatList, eval.vc.name , VC.est, XtXinv, var.resids
   
   ind.mats <- match(eval.vc.name, names.cov.mat)
   
-  est.var.by.eval.vc.name <- sum(VC.est[ind.mats])
+  est.var.by.eval.vc.name <- sum(VC.est[eval.vc.name])
   
   ind.in.XtX <- ind.mats + 1
   
