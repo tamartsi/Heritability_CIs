@@ -43,3 +43,10 @@ est_CIs <- calcCIsForVCs(covMatList,
 est_CIs
 
 
+
+est_CIs <- calcCIsForVCs(covMatList, 
+                         eval.vc.name = "hh", 
+                         VC.est = est_vcs$VC, 
+                         XtXinv = est_vcs$XtXinv, 
+                         var.resids = est_vcs$var.resids)
+est_CIs

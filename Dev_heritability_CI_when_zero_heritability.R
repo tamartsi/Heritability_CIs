@@ -179,10 +179,11 @@ calcCIsForVCs <- function( covMatList, eval.vc.name , VC.est, XtXinv, var.resids
   
   
   ########  binary search for high.CI point
-  val.low <- 0 ; surv.low <- 1
-  val.high <- total.var; surv.high <- 0
+  # start from the low point of the CI rather than from 0
+  val.low <- low.CI.val; surv.low <- davies(val.low, lambda, acc=1e-6)$Qq
+  val.high <- total.var; surv.high <- davies(val.high, lambda, acc=1e-6)$Qq
   val.mid <- (val.high + val.low)/2 ; surv.mid <- davies(val.mid, lambda, acc=1e-6)$Qq
-  while (abs(surv.mid - low.CI.prob) > prob.eps & abs(val.mid - val.low) > end.point.eps & abs(val.mid - val.high) > end.point.eps) {
+  while (abs(surv.mid - high.CI.prob) > prob.eps & abs(val.mid - val.low) > end.point.eps & abs(val.mid - val.high) > end.point.eps) {
     if (surv.mid > high.CI.prob){
       val.low <- val.mid; surv.low <- surv.mid
       val.mid <- (val.high + val.low)/2 ; surv.mid <- davies(val.mid, lambda, acc=1e-6)$Qq
@@ -234,10 +235,11 @@ calcCIsForVCs <- function( covMatList, eval.vc.name , VC.est, XtXinv, var.resids
   
   
   ########  binary search for high.CI point
-  val.low <- 0 ; surv.low <- 1
-  val.high <- 1; surv.high <- 0
+  val.low <- low.ratio.CI.val; surv.low <- surv.ratio(const = val.low, mat, var.mat)$surv
+  val.high <- 1; surv.high <- surv.ratio(const = val.high, mat, var.mat)$surv
+  
   val.mid <- (val.high + val.low)/2 ; surv.mid <- surv.ratio(const = val.mid, mat, var.mat)$surv
-  while (abs(surv.mid - low.CI.prob) > prob.eps & abs(val.mid - val.low) > end.point.eps & abs(val.mid - val.high) > end.point.eps) {
+  while (abs(surv.mid - high.CI.prob) > prob.eps & abs(val.mid - val.low) > end.point.eps & abs(val.mid - val.high) > end.point.eps) {
     if (surv.mid > high.CI.prob){
       val.low <- val.mid; surv.low <- surv.mid
       val.mid <- (val.high + val.low)/2 ; surv.mid <- surv.ratio(const = val.mid, mat, var.mat)$surv
